@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- Indica al navegador que este archivo es HTML moderno (HTML5) -->
+<html lang="es">
+<!-- lang="es": avisa que la pagina esta en espanol (ayuda a lectores de pantalla y traductores) -->
+
+<head>
+  <!-- Codificacion de caracteres: permite acentos y la letra n con tilde -->
+  <meta charset="UTF-8">
+  <!-- Hace que la pagina se adapte al ancho del celular en vez de verse diminuta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Titulo que aparece en la pestana del navegador -->
+  <title>Recetario de cocina</title>
+  <!-- Conecta el archivo de estilos (colores, tamanos, distribucion) -->
+  <link rel="stylesheet" href="estilos.css">
+</head>
+
+<body>
+  <!-- ENCABEZADO: titulo de la pagina -->
+  <header class="encabezado">
+    <h1>🍳 Recetario de cocina</h1>
+    <p>Busca platillos, filtra por categoría o déjate sorprender.</p>
+  </header>
+
+  <!-- CONTROLES: buscador, filtro por categoria y boton aleatorio -->
+  <section class="controles">
+    <!-- Formulario de busqueda: al enviarlo (Enter o boton) el JS buscara por nombre -->
+    <form id="formulario-busqueda" class="buscador">
+      <!-- La etiqueta "label" describe el campo; esta oculta a la vista pero la leen los lectores de pantalla -->
+      <label for="campo-busqueda" class="solo-lectores">Nombre del platillo</label>
+      <input type="text" id="campo-busqueda" placeholder="Ej. pasta, pollo, arroz..." autocomplete="off">
+      <button type="submit" id="boton-buscar">Buscar</button>
+    </form>
+
+    <!-- Lista desplegable de categorias: el JS la llenara con datos de la API -->
+    <div class="filtro">
+      <label for="selector-categoria">Categoría:</label>
+      <select id="selector-categoria">
+        <option value="">Todas / elige una categoría</option>
+      </select>
+    </div>
+
+    <!-- Boton de receta aleatoria -->
+    <button type="button" id="boton-aleatoria" class="boton-secundario">🎲 Sorpréndeme</button>
+  </section>
+
+  <main>
+    <!-- MENSAJES: aqui el JS mostrara "Cargando...", "No encontramos recetas" y los errores.
+         aria-live="polite" hace que los lectores de pantalla anuncien los cambios. -->
+    <div id="mensaje" class="mensaje" aria-live="polite">Escribe un platillo o elige una categoría para empezar.</div>
+
+    <!-- RESULTADOS: aqui el JS pondra las tarjetas (foto + nombre) -->
+    <section id="resultados" class="rejilla"></section>
+  </main>
+
+  <!-- DETALLE: ventana que cubre la pantalla con la receta completa.
+       "hidden" la mantiene oculta hasta que el JS la muestre. -->
+  <div id="detalle" class="detalle" hidden>
+    <article class="detalle-contenido">
+      <button type="button" id="cerrar-detalle" class="cerrar" aria-label="Cerrar detalle">✕</button>
+      <h2 id="detalle-titulo"></h2>
+      <img id="detalle-imagen" src="" alt="">
+      <!-- Categoria y origen del platillo (ej. "Pollo · Italiana") -->
+      <p id="detalle-info" class="detalle-info"></p>
+      <h3>Ingredientes</h3>
+      <ul id="detalle-ingredientes"></ul>
+      <h3>Instrucciones</h3>
+      <p id="detalle-instrucciones"></p>
+    </article>
+  </div>
+
+  <!-- Script del frontend (se crea en la Fase 4). "defer" lo ejecuta cuando la pagina ya cargo. -->
+  <script src="app.js" defer></script>
+</body>
+
+</html>
