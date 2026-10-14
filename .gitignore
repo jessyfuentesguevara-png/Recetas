@@ -1,0 +1,8 @@
+# Archivo con la clave secreta de la API: NUNCA debe subirse a GitHub
+.env
+
+# Carpeta con las librerías descargadas por npm (pesada y se regenera con "npm install")
+node_modules
+
+# Configuración local de Claude Code: es de mi computadora, no del proyecto
+.claude/
