@@ -108,6 +108,10 @@ El navegador solo habla con estas rutas; el servidor es quien llama a TheMealDB 
 - TheMealDB busca el texto exacto dentro del nombre del platillo, así que una frase de varias palabras (por ejemplo `chicken rice`) casi nunca devuelve resultados.
 - La foto principal de la portada viene de una receta real de TheMealDB (700 × 700 px), por lo que se muestra a un tamaño moderado para no verse borrosa.
 
+## Bitácora de programación con IA
+
+La bitácora (prompts reales, errores de la IA detectados y aprendizajes) está en [BITACORA.md](BITACORA.md).
+
 ## Declaración de uso de IA
 
 Este proyecto se hizo **con ayuda de inteligencia artificial**, como permite la tarea. Aquí declaro qué herramientas usé, para qué y qué hice yo.
