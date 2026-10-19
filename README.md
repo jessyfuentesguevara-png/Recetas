@@ -105,7 +105,8 @@ El navegador solo habla con estas rutas; el servidor es quien llama a TheMealDB 
 
 - Los nombres de platillos, ingredientes e instrucciones vienen de la API **en inglés**. Solo la interfaz está en español. Por eso conviene buscar en inglés (por ejemplo `chicken` en lugar de `pollo`).
 - La clave `1` es de prueba, solo para desarrollo o uso educativo. La documentación de TheMealDB indica que para publicar una app se necesita una clave de supporter.
-- Si se hacen dos búsquedas muy seguidas, la respuesta más lenta puede reemplazar a la más rápida.
+- TheMealDB busca el texto exacto dentro del nombre del platillo, así que una frase de varias palabras (por ejemplo `chicken rice`) casi nunca devuelve resultados.
+- La foto principal de la portada viene de una receta real de TheMealDB (700 × 700 px), por lo que se muestra a un tamaño moderado para no verse borrosa.
 
 ## Declaración de uso de IA
 

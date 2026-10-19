@@ -10,65 +10,126 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Titulo que aparece en la pestana del navegador -->
   <title>Recetario de cocina</title>
+
+  <!-- Fuentes de Google Fonts: DM Serif Display (titulos) y Nunito Sans (texto).
+       "preconnect" avisa al navegador que pronto pedira cosas a esos servidores, para ir mas rapido.
+       Si no hay internet, el CSS usa tipografias del sistema como respaldo. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700&display=swap">
+
   <!-- Conecta el archivo de estilos (colores, tamanos, distribucion) -->
   <link rel="stylesheet" href="estilos.css">
 </head>
 
 <body>
-  <!-- ENCABEZADO: titulo de la pagina -->
-  <header class="encabezado">
-    <h1>🍳 Recetario de cocina</h1>
-    <p>Busca platillos, filtra por categoría o déjate sorprender.</p>
+  <!-- BARRA SUPERIOR: marca a la izquierda y enlaces a la derecha -->
+  <header class="barra">
+    <div class="barra-contenido">
+      <!-- Marca: icono de olla dibujado con SVG (un dibujo hecho con codigo) + nombre -->
+      <a class="marca" href="#inicio">
+        <svg class="marca-icono" viewBox="0 0 32 32" width="34" height="34" aria-hidden="true">
+          <path d="M11 8a5 5 0 0 1 10 0v2H11z" fill="currentColor"/>
+          <rect x="3" y="10" width="26" height="4" rx="2" fill="currentColor"/>
+          <path d="M5 14h22v6a8 8 0 0 1-8 8h-6a8 8 0 0 1-8-8z" fill="currentColor"/>
+          <rect x="0.5" y="15" width="4" height="3" rx="1.5" fill="currentColor"/>
+          <rect x="27.5" y="15" width="4" height="3" rx="1.5" fill="currentColor"/>
+        </svg>
+        <span>Recetario de cocina</span>
+      </a>
+      <!-- Navegacion: enlaces que llevan a una parte de esta misma pagina -->
+      <nav aria-label="Principal">
+        <a href="#inicio" aria-current="page">Inicio</a>
+        <a href="#categorias">Categorías</a>
+      </nav>
+    </div>
   </header>
 
-  <!-- CONTROLES: buscador, filtro por categoria y boton aleatorio -->
-  <section class="controles">
-    <!-- Formulario de busqueda: al enviarlo (Enter o boton) el JS buscara por nombre -->
-    <form id="formulario-busqueda" class="buscador">
-      <!-- La etiqueta "label" describe el campo; esta oculta a la vista pero la leen los lectores de pantalla -->
-      <label for="campo-busqueda" class="solo-lectores">Nombre del platillo</label>
-      <input type="text" id="campo-busqueda" placeholder="Ej. pasta, pollo, arroz..." autocomplete="off">
-      <button type="submit" id="boton-buscar">Buscar</button>
-    </form>
+  <!-- HERO: seccion grande de bienvenida. Texto y controles a la izquierda, foto a la derecha -->
+  <section class="encabezado" id="inicio">
+    <div class="hero-contenido">
+      <div class="hero-texto">
+        <!-- Pequeno adorno decorativo (aria-hidden: los lectores de pantalla lo ignoran) -->
+        <span class="adorno" aria-hidden="true">❧</span>
+        <h1>Recetario de cocina</h1>
+        <p class="hero-frase">Busca platillos, filtra por categoría o déjate sorprender.</p>
 
-    <!-- Lista desplegable de categorias: el JS la llenara con datos de la API -->
-    <div class="filtro">
-      <label for="selector-categoria">Categoría:</label>
-      <select id="selector-categoria">
-        <option value="">Todas / elige una categoría</option>
-      </select>
+        <!-- CONTROLES: buscador, boton aleatorio y filtro por categoria -->
+        <div class="controles">
+          <!-- Formulario de busqueda: al enviarlo (Enter o boton) el JS buscara por nombre -->
+          <form id="formulario-busqueda" class="buscador">
+            <!-- Icono de lupa dibujado con SVG -->
+            <svg class="buscador-icono" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <line x1="15.5" y1="15.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <!-- La etiqueta "label" describe el campo; esta oculta a la vista pero la leen los lectores de pantalla -->
+            <label for="campo-busqueda" class="solo-lectores">Nombre del platillo</label>
+            <input type="text" id="campo-busqueda" placeholder="Ej. pasta, pollo, curry..." autocomplete="off">
+            <button type="submit" id="boton-buscar">Buscar</button>
+          </form>
+
+          <!-- Boton de receta aleatoria -->
+          <button type="button" id="boton-aleatoria" class="boton-secundario"><span aria-hidden="true">✨</span> Sorpréndeme</button>
+
+          <!-- Lista desplegable de categorias: el JS la llenara con datos de la API -->
+          <div class="filtro">
+            <label for="selector-categoria" class="solo-lectores">Categoría</label>
+            <select id="selector-categoria">
+              <option value="">Todas las categorías</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Foto del hero: una receta real de TheMealDB (ensalada de pasta con tomates y albahaca) -->
+      <div class="hero-foto">
+        <img src="https://www.themealdb.com/images/media/meals/wvqpwt1468339226.jpg"
+             alt="Ensalada de pasta con tomates cherry, albahaca y mozzarella en un plato blanco">
+      </div>
     </div>
-
-    <!-- Boton de receta aleatoria -->
-    <button type="button" id="boton-aleatoria" class="boton-secundario">🎲 Sorpréndeme</button>
   </section>
 
   <main>
-    <!-- MENSAJES: aqui el JS mostrara "Cargando...", "No encontramos recetas" y los errores.
-         aria-live="polite" hace que los lectores de pantalla anuncien los cambios. -->
-    <div id="mensaje" class="mensaje" aria-live="polite">Escribe un platillo o elige una categoría para empezar.</div>
+    <!-- EXPLORA POR CATEGORIA: el JS dibuja aqui un circulo por cada categoria de la API -->
+    <section class="categorias" id="categorias">
+      <h2>Explora por categoría</h2>
+      <div id="lista-categorias" class="categorias-lista"></div>
+    </section>
 
-    <!-- RESULTADOS: aqui el JS pondra las tarjetas (foto + nombre) -->
-    <section id="resultados" class="rejilla"></section>
+    <!-- RESULTADOS: titulo dinamico, mensajes de estado y tarjetas -->
+    <section class="resultados-seccion">
+      <h2 id="titulo-resultados">Para inspirarte</h2>
+      <!-- MENSAJES: aqui el JS mostrara "Cargando...", "No encontramos recetas" y los errores.
+           aria-live="polite" hace que los lectores de pantalla anuncien los cambios. -->
+      <div id="mensaje" class="mensaje" aria-live="polite"></div>
+      <!-- Aqui el JS pondra las tarjetas (foto + nombre + etiquetas) -->
+      <section id="resultados" class="rejilla"></section>
+    </section>
   </main>
 
   <!-- DETALLE: ventana que cubre la pantalla con la receta completa.
-       "hidden" la mantiene oculta hasta que el JS la muestre. -->
-  <div id="detalle" class="detalle" hidden>
+       "hidden" la mantiene oculta hasta que el JS la muestre.
+       role="dialog" y aria-modal avisan a los lectores de pantalla que es una ventana emergente. -->
+  <div id="detalle" class="detalle" hidden role="dialog" aria-modal="true" aria-labelledby="detalle-titulo">
     <article class="detalle-contenido">
       <button type="button" id="cerrar-detalle" class="cerrar" aria-label="Cerrar detalle">✕</button>
       <h2 id="detalle-titulo"></h2>
       <img id="detalle-imagen" src="" alt="">
-      <!-- Categoria y origen del platillo (ej. "Pollo · Italiana") -->
+      <!-- Categoria y origen del platillo (ej. "Chicken · Italian") -->
       <p id="detalle-info" class="detalle-info"></p>
-      <h3>Ingredientes</h3>
-      <ul id="detalle-ingredientes"></ul>
-      <h3>Instrucciones</h3>
-      <p id="detalle-instrucciones"></p>
+      <section class="detalle-seccion">
+        <h3>Ingredientes</h3>
+        <ul id="detalle-ingredientes"></ul>
+      </section>
+      <section class="detalle-seccion">
+        <h3>Instrucciones</h3>
+        <p id="detalle-instrucciones"></p>
+      </section>
     </article>
   </div>
 
-  <!-- Script del frontend (se crea en la Fase 4). "defer" lo ejecuta cuando la pagina ya cargo. -->
+  <!-- Script del frontend. "defer" lo ejecuta cuando la pagina ya cargo. -->
   <script src="app.js" defer></script>
 </body>
 
