@@ -112,15 +112,13 @@ El navegador solo habla con estas rutas; el servidor es quien llama a TheMealDB 
 
 Este proyecto se hizo **con ayuda de inteligencia artificial**, como permite la tarea. Aquí declaro qué herramientas usé, para qué y qué hice yo.
 
-> ✏️ **Antes de entregar:** completa o corrige todo lo marcado con ✏️ para que sea verdad, y borra esos avisos.
-
 ### Herramientas de IA que usé
 
 | Herramienta | Para qué la usé |
 |---|---|
 | **Claude Code** (modelo Claude Sonnet 5.5, app de escritorio de Claude) | Generar el código del servidor y del frontend, explicarme cada parte, depurar y probar la app en el navegador, escribir este README y guiarme con los comandos de Git |
-| **ChatGPT** | ✏️ Confirma y ajusta: propuesta de diseño visual (mockup y paleta de colores) a partir de un prompt que preparó Claude, y el prompt de rediseño que luego le di a Claude |
-| GitHub Copilot, Cursor, Codespaces | ✏️ Si no los usaste, deja escrito "No los usé". Si los usaste, explica para qué |
+| **ChatGPT** | Generar las imágenes de referencia del rediseño (el mockup) y la propuesta de diseño y paleta de colores. El prompt que le di a ChatGPT lo redactó Claude. Las imágenes de ChatGPT solo sirvieron de referencia: las fotos que muestra la app vienen de TheMealDB |
+| GitHub Copilot, Cursor, Codespaces | No los usé |
 
 ### Dónde usé IA en el proyecto
 
@@ -131,20 +129,28 @@ Este proyecto se hizo **con ayuda de inteligencia artificial**, como permite la 
 | `public/index.html` | Claude escribió la estructura de la página y el rediseño | Elegí el diseño a seguir (mockup) y revisé el resultado |
 | `public/estilos.css` | Claude escribió los estilos: primero una versión básica y luego el rediseño "Cocina de hogar" con la paleta y las fuentes del prompt de diseño | Detecté que la foto del detalle se veía recortada y pedí corregirla; pedí un naranja más claro |
 | `public/app.js` | Claude escribió la lógica: buscar, filtrar por categoría, detalle, receta aleatoria, "Cargando...", manejo de errores y las 4 recetas de inicio | Revisé cada fase; detecté que "pollo con arroz" no devolvía resultados y que el contenido salía en inglés |
-| `README.md` | Claude redactó las instrucciones de ejecución y el borrador de esta declaración | ✏️ Completé y corregí esta declaración |
+| `README.md` | Claude redactó las instrucciones de ejecución y el borrador de esta declaración | Completé la declaración con lo que realmente hice yo |
 
 ### Cómo trabajé con la IA
 
 - Escribí un prompt con el stack permitido, la API, las reglas de seguridad y **6 fases**. Revisé cada fase antes de pasar a la siguiente.
-- Elegí la API (TheMealDB), pedí el manejo de errores obligatorio (sin conexión, respuesta vacía, límite de peticiones) y probé que la app abriera y funcionara.
-- Para el rediseño, usé ChatGPT para obtener una propuesta visual y se la pasé a Claude para implementarla.
+- Elegí la API (TheMealDB), pedí el manejo de errores obligatorio (sin conexión, respuesta vacía, límite de peticiones) y revisé el funcionamiento de la app.
+- Para el rediseño, le di a Claude las indicaciones paso a paso: la paleta de colores, el diseño y cómo quería que funcionara la página. Usé ChatGPT para generar las imágenes de referencia (el mockup) y se las pasé a Claude para implementarlas.
 
 ### Git y commits (transparencia)
 
 - Los commits desde "Agrega estructura inicial" hasta "Rediseño 'Cocina de hogar'" **los creó Claude Code a petición mía**, siguiendo mis instrucciones paso a paso. Por eso llevan la línea `Co-Authored-By: Claude` y varios se hicieron el mismo día, al terminar cada parte, y no a medida que escribía el código.
-- ✏️ Los commits posteriores a este los hice yo, y aprendí a hacerlos con la guía de Claude. (Deja esta frase solo cuando sea cierto.)
+- Los commits que hice yo, con la guía de Claude paso a paso en la terminal, son "Agrega declaración de uso de IA en el README" y los que siguen a ese.
 
 ### Lo que hice yo sin ayuda de IA
 
-✏️ **Complétalo tú, con la verdad.** Solo tú sabes qué hiciste sin IA. Escribe aquí, por ejemplo, qué partes escribiste o modificaste a mano, qué configuraste tú (cuenta y repositorio de GitHub, solicitud del GitHub Student Developer Pack) y qué probaste por tu cuenta. Si no hubo partes de código escritas sin IA, escríbelo así, tal cual.
+**No escribí el código a mano:** el código del servidor, la página, los estilos y el JavaScript lo escribió Claude Code a partir de mis indicaciones. Lo que hice yo fue:
+
+- Definir la idea del proyecto y cómo quería que funcionara la página: buscar por nombre, filtrar por categoría, ver el detalle de una receta, receta aleatoria y mensajes de error y de carga.
+- Elegir la API (TheMealDB) y las reglas del proyecto: solo `express` y `dotenv`, y la clave en un archivo `.env` que nunca se sube.
+- Dirigir el trabajo por fases y revisar cada una antes de aprobar la siguiente.
+- Definir el diseño visual: la paleta de colores, el estilo y el mockup, y decidir cómo usar ChatGPT para las imágenes de referencia.
+- Probar la página y detectar errores que le pedí a la IA corregir: la foto del detalle se veía recortada, "pollo con arroz" no daba resultados y el contenido de las recetas salía en inglés.
+- Crear mi cuenta y el repositorio de GitHub, y solicitar el GitHub Student Developer Pack.
+- Hacer yo, desde la terminal, los commits indicados arriba.
 
