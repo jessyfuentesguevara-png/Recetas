@@ -48,6 +48,56 @@ app.get('/api/salud', (req, res) => {
 // para que el navegador nunca la vea.
 const URL_BASE = `https://www.themealdb.com/api/json/v1/${API_KEY}`;
 
+// ------------------------------------------------------------
+// TRADUCCIONES AL ESPANOL
+// TheMealDB solo entrega las recetas en ingles. Para mostrarlas en espanol, las traducimos
+// UNA SOLA VEZ y las guardamos en el archivo datos/traducciones-es.json. Asi la pagina no
+// necesita cuentas, claves ni servicios de traduccion, y funciona igual en cualquier navegador.
+// El archivo tiene tres partes:
+//   recetas:      para cada id de receta, su nombre ("n") y sus instrucciones ("i") en espanol
+//   ingredientes: diccionario  ingles -> espanol  (por ejemplo "chicken" -> "pollo")
+//   medidas:      diccionario  ingles -> espanol  (por ejemplo "2 tbsp" -> "2 cucharadas")
+// ------------------------------------------------------------
+
+// "fs" (file system) es el modulo de Node que sirve para leer archivos.
+const fs = require('fs');
+
+// Si el archivo no existe, la app sigue funcionando y las recetas se muestran en ingles.
+let TRADUCCIONES = { recetas: {}, ingredientes: {}, medidas: {} };
+try {
+  const texto = fs.readFileSync(path.join(__dirname, 'datos', 'traducciones-es.json'), 'utf8');
+  TRADUCCIONES = JSON.parse(texto);
+} catch (error) {
+  console.log('Aviso: no se pudo leer datos/traducciones-es.json. Las recetas se mostraran en ingles.');
+}
+
+// Traduce SOLO el nombre de una receta (sirve para las listas de tarjetas).
+// Si la receta no esta en el archivo, se devuelve igual que llego.
+function traducirNombre(receta) {
+  const es = TRADUCCIONES.recetas[receta.idMeal];
+  return es ? { ...receta, strMeal: es.n } : receta;
+}
+
+// Traduce una receta COMPLETA: nombre, instrucciones, ingredientes y medidas.
+function traducirReceta(receta) {
+  const es = TRADUCCIONES.recetas[receta.idMeal];
+  if (!es) return receta;                         // no esta en el archivo: se queda en ingles
+  // Las tres rayitas "..." copian todos los campos de la receta y luego cambiamos algunos
+  const traducida = { ...receta, strMeal: es.n, strInstructions: es.i };
+  // TheMealDB guarda los ingredientes como strIngredient1...20 y las medidas como strMeasure1...20
+  for (let i = 1; i <= 20; i++) {
+    const ingrediente = (receta['strIngredient' + i] || '').trim();
+    if (!ingrediente) continue;                   // casillas vacias: las saltamos
+    // Buscamos cada texto en el diccionario (en minusculas); si no esta, dejamos el original
+    traducida['strIngredient' + i] = TRADUCCIONES.ingredientes[ingrediente.toLowerCase()] || ingrediente;
+    const medida = (receta['strMeasure' + i] || '').trim();
+    if (medida) {
+      traducida['strMeasure' + i] = TRADUCCIONES.medidas[medida.toLowerCase()] || medida;
+    }
+  }
+  return traducida;
+}
+
 // Funcion auxiliar: le pide un dato a TheMealDB y entrega el JSON ya convertido.
 // "async" permite usar "await" para esperar la respuesta sin congelar el servidor.
 // Recibe la parte final de la direccion, por ejemplo "/search.php?s=pasta".
@@ -94,10 +144,27 @@ app.get('/api/buscar', async (req, res) => {
   if (!nombre) {
     return res.status(400).json({ error: 'falta_nombre' });
   }
+  // Lista de formas del nombre que vamos a probar, en orden.
+  // TheMealDB encuentra "enchilada" pero no "enchiladas", asi que si el texto termina
+  // en "es" o en "s", tambien probamos la palabra en singular.
+  const candidatos = [nombre];
+  if (nombre.length > 4 && nombre.toLowerCase().endsWith('es')) {
+    candidatos.push(nombre.slice(0, -2)); // quita las dos ultimas letras ("es")
+  }
+  if (nombre.length > 3 && nombre.toLowerCase().endsWith('s')) {
+    candidatos.push(nombre.slice(0, -1)); // quita la ultima letra ("s")
+  }
   try {
-    // encodeURIComponent convierte espacios y acentos a un formato seguro para URLs.
-    const recetas = await consultarApi(`/search.php?s=${encodeURIComponent(nombre)}`);
-    res.json({ meals: recetas }); // si no hubo resultados, meals sera null
+    // Probamos cada forma hasta que alguna devuelva recetas.
+    for (const candidato of candidatos) {
+      // encodeURIComponent convierte espacios y acentos a un formato seguro para URLs.
+      const recetas = await consultarApi(`/search.php?s=${encodeURIComponent(candidato)}`);
+      if (recetas) {
+        // map aplica la traduccion a cada receta de la lista
+        return res.json({ meals: recetas.map(traducirReceta) });
+      }
+    }
+    res.json({ meals: null }); // ninguna forma encontro recetas
   } catch (error) {
     responderError(res, error);
   }
@@ -130,7 +197,8 @@ app.get('/api/filtrar', async (req, res) => {
   }
   try {
     const recetas = await consultarApi(`/filter.php?c=${encodeURIComponent(categoria)}`);
-    res.json({ meals: recetas });
+    // Esta lista solo trae nombre, foto e id, asi que traducimos solo el nombre
+    res.json({ meals: recetas ? recetas.map(traducirNombre) : null });
   } catch (error) {
     responderError(res, error);
   }
@@ -145,7 +213,7 @@ app.get('/api/receta/:id', async (req, res) => {
   }
   try {
     const recetas = await consultarApi(`/lookup.php?i=${id}`);
-    res.json({ meals: recetas });
+    res.json({ meals: recetas ? recetas.map(traducirReceta) : null });
   } catch (error) {
     responderError(res, error);
   }
@@ -155,7 +223,7 @@ app.get('/api/receta/:id', async (req, res) => {
 app.get('/api/aleatoria', async (req, res) => {
   try {
     const recetas = await consultarApi('/random.php');
-    res.json({ meals: recetas });
+    res.json({ meals: recetas ? recetas.map(traducirReceta) : null });
   } catch (error) {
     responderError(res, error);
   }

@@ -103,7 +103,8 @@ El navegador solo habla con estas rutas; el servidor es quien llama a TheMealDB 
 
 ## Limitaciones conocidas
 
-- Los nombres de platillos, ingredientes e instrucciones vienen de la API **en inglés**. Solo la interfaz está en español. Por eso conviene buscar en inglés (por ejemplo `chicken` en lugar de `pollo`).
+- Todo el contenido está en español latinoamericano: la interfaz, las categorías y los orígenes se traducen con diccionarios, y los nombres, ingredientes, medidas e instrucciones de unas 790 recetas están traducidos de antemano en `datos/traducciones-es.json`. El servidor mezcla ese archivo con lo que responde TheMealDB. La traducción se hizo con ayuda de Claude (ver la declaración de uso de IA). Si TheMealDB agrega recetas nuevas que no están en el archivo, esas se mostrarán en inglés. Se puede buscar en español (por ejemplo `pollo`) o en inglés (`chicken`).
+- TheMealDB casi no tiene platillos mexicanos (por ejemplo, no tiene `chilaquiles`). La búsqueda también prueba la palabra en singular (`enchiladas` encuentra `enchilada`).
 - La clave `1` es de prueba, solo para desarrollo o uso educativo. La documentación de TheMealDB indica que para publicar una app se necesita una clave de supporter.
 - TheMealDB busca el texto exacto dentro del nombre del platillo, así que una frase de varias palabras (por ejemplo `chicken rice`) casi nunca devuelve resultados.
 - La foto principal de la portada viene de una receta real de TheMealDB (700 × 700 px), por lo que se muestra a un tamaño moderado para no verse borrosa.

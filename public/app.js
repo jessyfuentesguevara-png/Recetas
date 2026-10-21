@@ -31,6 +31,61 @@ let turno = 0;
 // Texto del mensaje inicial
 const MENSAJE_INICIAL = 'Escribe un platillo o elige una categoría para empezar.';
 
+// Nombres de las categorias en espanol. TheMealDB las manda en ingles y son siempre las mismas 14,
+// asi que las traducimos con este diccionario (gratis, sin cuentas y sin limites).
+const CATEGORIAS_ES = {
+  Beef: 'Res',
+  Breakfast: 'Desayunos',
+  Chicken: 'Pollo',
+  Dessert: 'Postres',
+  Goat: 'Cabra',
+  Lamb: 'Cordero',
+  Miscellaneous: 'Variados',
+  Pasta: 'Pasta',
+  Pork: 'Cerdo',
+  Seafood: 'Mariscos',
+  Side: 'Guarniciones',
+  Starter: 'Entradas',
+  Vegan: 'Vegano',
+  Vegetarian: 'Vegetariano'
+};
+
+// Origenes de las recetas (nacionalidades y paises) en espanol. TheMealDB manda uno u otro,
+// por ejemplo "Italian" o "Italy". Si llega uno que no esta aqui, se muestra tal cual.
+const ORIGENES_ES = {
+  // Nacionalidades (como "cocina italiana")
+  American: 'Estadounidense', Argentinian: 'Argentina', Algerian: 'Argelina', British: 'Británica',
+  Canadian: 'Canadiense', Chinese: 'China', Croatian: 'Croata', Dutch: 'Holandesa',
+  Egyptian: 'Egipcia', Filipino: 'Filipina', French: 'Francesa', German: 'Alemana',
+  Greek: 'Griega', Indian: 'India', Irish: 'Irlandesa', Italian: 'Italiana',
+  Jamaican: 'Jamaiquina', Japanese: 'Japonesa', Kenyan: 'Keniana', Malaysian: 'Malasia',
+  Mexican: 'Mexicana', Moroccan: 'Marroquí', Norwegian: 'Noruega', Polish: 'Polaca',
+  Portuguese: 'Portuguesa', Russian: 'Rusa', Slovakian: 'Eslovaca', Spanish: 'Española',
+  Syrian: 'Siria', Thai: 'Tailandesa', Tunisian: 'Tunecina', Turkish: 'Turca',
+  Ukrainian: 'Ucraniana', Uruguayan: 'Uruguaya', Venezuelan: 'Venezolana', Vietnamese: 'Vietnamita',
+  // Paises
+  Algeria: 'Argelia', Argentina: 'Argentina', Belgium: 'Bélgica', Brazil: 'Brasil',
+  Bulgaria: 'Bulgaria', Canada: 'Canadá', China: 'China', Croatia: 'Croacia',
+  Denmark: 'Dinamarca', Egypt: 'Egipto', France: 'Francia', Germany: 'Alemania',
+  Greece: 'Grecia', India: 'India', Ireland: 'Irlanda', Italy: 'Italia',
+  Jamaica: 'Jamaica', Japan: 'Japón', Kenya: 'Kenia', Malaysia: 'Malasia',
+  Mexico: 'México', Morocco: 'Marruecos', Netherlands: 'Países Bajos', Norway: 'Noruega',
+  Philippines: 'Filipinas', Poland: 'Polonia', Portugal: 'Portugal', Russia: 'Rusia',
+  Slovakia: 'Eslovaquia', Spain: 'España', Syria: 'Siria', Thailand: 'Tailandia',
+  Tunisia: 'Túnez', Turkey: 'Turquía', Ukraine: 'Ucrania', 'United Kingdom': 'Reino Unido',
+  'United States': 'Estados Unidos', Uruguay: 'Uruguay', Venezuela: 'Venezuela', Vietnam: 'Vietnam'
+};
+
+// Devuelve el nombre de la categoria en espanol (o el mismo texto si no esta en el diccionario).
+function categoriaEnEspanol(nombre) {
+  return CATEGORIAS_ES[nombre] || nombre;
+}
+
+// Devuelve el origen en espanol (o el mismo texto si no esta en el diccionario).
+function origenEnEspanol(nombre) {
+  return ORIGENES_ES[nombre] || nombre;
+}
+
 // ---------- 2. Funciones auxiliares ----------
 
 // Crea un error con una etiqueta ("tipo") que dice que clase de problema fue.
@@ -113,9 +168,14 @@ function mostrarError(error) {
 // Devuelve las etiquetas de una receta (categoria y pais), sin valores vacios.
 // "categoriaElegida" se usa cuando la API no manda categoria (pasa al filtrar por categoria).
 function obtenerEtiquetas(receta, categoriaElegida) {
-  const etiquetas = [receta.strCategory || categoriaElegida, receta.strArea];
-  // filter descarta lo vacio, null y el valor "Unknown" que a veces manda la API
-  return etiquetas.filter((texto) => texto && texto !== 'Unknown');
+  const categoria = receta.strCategory || categoriaElegida;
+  const origen = receta.strArea || receta.strCountry;
+  const etiquetas = [];
+  // Agregamos cada etiqueta solo si existe, ya traducida al espanol.
+  // (La API a veces manda el valor "Unknown", que tampoco se muestra.)
+  if (categoria) etiquetas.push(categoriaEnEspanol(categoria));
+  if (origen && origen !== 'Unknown') etiquetas.push(origenEnEspanol(origen));
+  return etiquetas;
 }
 
 // Dibuja las tarjetas de una lista de recetas (foto, nombre y etiquetas).
@@ -191,7 +251,7 @@ function mostrarDetalle(receta) {
   detalleImagen.alt = receta.strMeal;
 
   // Categoria y origen; filter(Boolean) descarta los que vengan vacios o null.
-  const datos = [receta.strCategory, receta.strArea || receta.strCountry];
+  const datos = [categoriaEnEspanol(receta.strCategory), origenEnEspanol(receta.strArea || receta.strCountry)];
   detalleInfo.textContent = datos.filter(Boolean).join(' · ');
 
   // La API guarda los ingredientes como strIngredient1...strIngredient20
@@ -204,8 +264,12 @@ function mostrarDetalle(receta) {
     if (!ingrediente || !ingrediente.trim()) continue;
 
     const item = document.createElement('li');
-    // Une la medida con el ingrediente, ej. "200g Pasta"; si no hay medida, solo el ingrediente
-    item.textContent = ((medida || '').trim() + ' ' + ingrediente.trim()).trim();
+    // Formato "Ingrediente: medida" (por ejemplo "Sal: al gusto" o "Harina: 2 tazas").
+    // Asi suena natural en espanol sin importar el genero ni el tipo de medida.
+    // Si no hay medida, se muestra solo el ingrediente.
+    const nombre = ingrediente.trim();
+    const nombreConMayuscula = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    item.textContent = medida && medida.trim() ? nombreConMayuscula + ': ' + medida.trim() : nombreConMayuscula;
     detalleIngredientes.append(item);
   }
 
@@ -296,7 +360,7 @@ function dibujarCategorias(categorias) {
     circulo.append(icono);
 
     const nombreVisible = document.createElement('span');
-    nombreVisible.textContent = etiquetaTexto;
+    nombreVisible.textContent = nombre ? categoriaEnEspanol(nombre) : 'Todas'; // el nombre que se ve, en espanol
 
     boton.append(circulo, nombreVisible);
     listaCategorias.append(boton);
@@ -363,7 +427,7 @@ async function filtrarPorCategoria() {
   try {
     const datos = await pedirJson('/api/filtrar?categoria=' + encodeURIComponent(categoria));
     if (miTurno !== turno) return;
-    mostrarLista(datos.meals, 'Categoría: ' + categoria, categoria);
+    mostrarLista(datos.meals, 'Categoría: ' + categoriaEnEspanol(categoria), categoria);
   } catch (error) {
     if (miTurno !== turno) return;
     mostrarError(error);
@@ -432,7 +496,7 @@ async function cargarCategorias() {
     for (const categoria of datos.categories) {
       const opcion = document.createElement('option');  // <option>
       opcion.value = categoria.strCategory;               // valor que se enviara al servidor
-      opcion.textContent = categoria.strCategory;         // texto que ve el usuario
+      opcion.textContent = categoriaEnEspanol(categoria.strCategory); // texto que ve el usuario, en espanol
       selectorCategoria.append(opcion);
     }
     dibujarCategorias(datos.categories);
